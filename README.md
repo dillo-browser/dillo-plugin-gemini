@@ -8,6 +8,10 @@
 
 ## Install
 
+dillo-gemini requires `ncat`, which is included in the `nmap` package on Debian.
+
+This repo is hosted on the [SSB Network][SSB] using [git-ssb][].
+
 ```sh
 git clone ssb://%V0D7DtSnZyyAp1NbgOJF2ZAFMeUy9eXwyClCEKYUYAI=.sha256 dillo-gemini
 cd dillo-gemini
@@ -25,6 +29,8 @@ dpidc stop
 
 [Gemini]: https://gopher.tildeverse.org/zaibatsu.circumlunar.space/1/~solderpunk/gemini
 [Dillo]: https://dillo.org/
+[git-ssb]: %n92DiQh7ietE+R+X/I403LQoyf2DtR3WQfCkDKlheQU=.sha256
+[SSB]: https://www.scuttlebutt.nz/
 
 ## License
 
