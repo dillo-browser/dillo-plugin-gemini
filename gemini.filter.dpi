@@ -1,0 +1,143 @@
+#!/bin/bash
+# dillo-gemini
+# © 2019 cel @f/6sQ6d2CMxRUhLpspgGIulDxDCwYD7DzFzPNr7u5AU=.ed25519
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.
+
+read -d '>' auth
+read -d '>' cmd
+case "$cmd" in
+	"<cmd='open_url' url='"*);;
+	*) echo $cmd; exit;;
+esac
+url=${cmd#"<cmd='open_url' url='"}
+url=${url%"' '"}
+
+serve_404() {
+	printf "<cmd='start_send_page' url='' '>\n"
+	printf "Content-type: text/plain\r\n\r\n"
+	echo Not found
+}
+
+render_gemini() {
+	printf "Content-type: text/html\r\n\r\n<!doctype html><pre>"
+	sed 's/^\(=>\s*\)\(\S*\)*\(.*\)/\1<a href="\2">\2<\/a>\3/'
+	printf "%s" "</pre>"
+}
+
+send_status_msg() {
+	printf "<cmd='send_status_message' msg='%s' '>" "$*"
+}
+
+serve_status_not_supported() {
+	printf "<cmd='start_send_page' url='' '>\n"
+	printf "Content-type: text/plain\r\n\r\n"
+	echo Status not implemented: $1
+	echo $2
+}
+
+serve_missing_status() {
+	printf "<cmd='start_send_page' url='' '>\n"
+	printf "Content-type: text/plain\r\n\r\n"
+	echo Empty status response. $2
+}
+
+serve_success() {
+	printf "<cmd='start_send_page' url='' '>\n"
+	type=$1
+	case "$type" in
+		text/gemini*) render_gemini;;
+		*) printf "Content-type: $type\r\n\r\n"; cat;;
+	esac
+}
+
+serve_redirect() {
+	url=$1
+	send_status_msg "Redirected"
+	printf "<cmd='start_send_page' url='' '>\n"
+	printf "Content-type: text/html\r\n\r\n"
+	# TODO: html-escape url
+	cat <<-EOF
+	<!doctype html>
+	<html>
+	<head>
+	<title>Redirect to $url</title>
+	</head>
+	<body>
+	<h3>Redirect to <a href="$url">$url</a></3>
+	</body>
+	</html>
+	EOF
+}
+
+serve_error() {
+	status=$1
+	meta=$2
+	send_status_msg "Request failed"
+	printf "<cmd='start_send_page' url='' '>\n"
+	printf "Content-type: text/html\r\n\r\n"
+	cat <<-EOF
+	<!doctype html>
+	<html>
+	<head>
+	<title>Request failed</title>
+	</head>
+	<body>
+	<h3>Request failed: $status</h3>
+	<code>$meta</code>
+	</body>
+	</html>
+	EOF
+}
+
+serve_fail() {
+	meta="$1"
+	send_status_msg "Client certificate required"
+	printf "<cmd='start_send_page' url='' '>\n"
+	printf "Content-type: text/html\r\n\r\n"
+	cat <<-EOF
+	<!doctype html>
+	<html>
+	<head>
+	<title>Client certificate required</title>
+	</head>
+	<body>
+	<h3>Client certificate required</h3>
+	<p>Not implemented!</p>
+	<code>$meta</code>
+	</body>
+	</html>
+	EOF
+}
+
+serve_gemini() {
+	url=$1
+	url1=${url#gemini://}
+	hostname=${url1%%/*}
+	host=${hostname%%:*}
+	port=${hostname##*:}
+	if [ "$host" = "$port" ]; then port=1965; fi
+	send_status_msg "Sending request..."
+	printf "%s\r\n" "$url" | ncat --ssl "$host" "$port" | {
+		read status meta
+		send_status_msg "Status: $status"
+		meta=$(echo "$meta" | sed 's/\s*$//')
+		case "$status" in
+			1*) serve_input "$meta";;
+			2*) serve_success "$meta";;
+			3*) serve_redirect "$meta";;
+			4*) serve_error "$status" "$meta";;
+			5*) serve_error "$meta";;
+			6*) serve_client_cert_required "$meta";;
+			'') serve_missing_status "$meta";;
+			*) serve_status_not_supported "$status" "$meta";;
+		esac
+	}
+}
+
+case "$url" in
+	gemini:*) serve_gemini "$url";;
+	*) serve_404;;
+esac
