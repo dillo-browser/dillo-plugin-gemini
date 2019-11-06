@@ -8,7 +8,7 @@
 
 ## Install
 
-dillo-gemini requires `ncat`, which is included in the `nmap` package on Debian.
+dillo-gemini requires the `openssl` command-line tool.
 
 This repo is hosted on the [SSB Network][SSB] using [git-ssb][].
 
