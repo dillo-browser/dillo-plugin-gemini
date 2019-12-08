@@ -10,6 +10,8 @@
 
 dillo-gemini requires the `openssl` command-line tool.
 
+[ansi2html](https://pypi.org/project/ansi2html/) is optionally required to render pages that use ANSI escape codes (e.g. for colors).
+
 This repo is hosted on the [SSB Network][SSB] using [git-ssb][].
 
 ```sh
