@@ -167,7 +167,7 @@ serve_gemini() {
 			3*) serve_redirect "$meta";;
 			4*) serve_error "$status" "$meta";;
 			5*) serve_error "$meta";;
-			6*) serve_client_cert_required "$meta";;
+			#6*) serve_client_cert_required "$meta";;
 			'') serve_missing_status "$meta";;
 			*) serve_status_not_supported "$status" "$meta";;
 		esac
