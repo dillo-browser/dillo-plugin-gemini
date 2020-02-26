@@ -50,6 +50,28 @@ serve_missing_status() {
 	echo Empty status response. $2
 }
 
+serve_input() {
+	printf "<cmd='start_send_page' url='' '>\n"
+	prompt=$1
+	# TODO: html-escape prompt
+	printf "Content-type: text/html\r\n\r\n"
+	cat <<-EOF
+	<!doctype html>
+	<html>
+	<head>
+	<title>Input</title>
+	</head>
+	<body>
+	<form action="" method="get">
+		<h3>$prompt</h3>
+		<input name=_ style='width:100%'>
+		<input type=submit>
+	</form>
+	</body>
+	</html>
+	EOF
+}
+
 serve_success() {
 	printf "<cmd='start_send_page' url='' '>\n"
 	type=$1
@@ -124,6 +146,15 @@ serve_gemini() {
 	hostname=${url1%%/*}
 	host=${hostname%%:*}
 	port=${hostname##*:}
+
+	# replace "?_=" with "?".
+	# dillo can only submit forms with name=value items, but Gemini
+	# uses the whole querystring as a single string
+	url1=${url%%?_=*}
+	if [ "$url1" != "$url" ]; then
+		url="${url1}?${url#*?_=}"
+	fi
+
 	if [ "$host" = "$port" ]; then port=1965; fi
 	send_status_msg "Sending request..."
 	printf "%s\r\n" "$url" | openssl s_client -verify_quiet -quiet "$host:$port" | {
