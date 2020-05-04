@@ -18,9 +18,9 @@ This repo is hosted on the [SSB Network][SSB] using [git-ssb][].
 git clone ssb://%V0D7DtSnZyyAp1NbgOJF2ZAFMeUy9eXwyClCEKYUYAI=.sha256 dillo-gemini
 cd dillo-gemini
 mkdir -p ~/.dillo/dpi/gemini
-ln -rs gemini.dpi ~/.dillo/dpi/gemini
+ln -rs gemini.filter.dpi ~/.dillo/dpi/gemini
 test -f ~/.dillo/dpidrc || cp /etc/dillo/dpidrc ~/.dillo/dpidrc
-echo 'proto.gemini=gemini/gemini.dpi' >> ~/.dillo/dpidrc
+echo 'proto.gemini=gemini/gemini.filter.dpi' >> ~/.dillo/dpidrc
 dpidc stop
 ```
 
