@@ -27,7 +27,7 @@ render_gemini() {
 	then
 		ansi2html | sed 's/^\(=&gt;\s*\)\(\S*\)*\(.*\)/\1<a href="\2">\2<\/a>\3/'
 	else
-		printf "<!doctype html><pre>"
+		printf "<!doctype html><pre style='white-space: pre-wrap'>"
 		sed 's/^\(=>\s*\)\(\S*\)*\(.*\)/\1<a href="\2">\2<\/a>\3/'
 		printf "%s" "</pre>"
 	fi
