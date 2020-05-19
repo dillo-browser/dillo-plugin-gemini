@@ -27,9 +27,31 @@ render_gemini() {
 	then
 		ansi2html | sed 's/^\(=&gt;\s*\)\(\S*\)*\(.*\)/\1<a href="\2">\2<\/a>\3/'
 	else
-		printf "<!doctype html><pre style='white-space: pre-wrap'>"
-		sed 's/^\(=>\s*\)\(\S*\)*\(.*\)/\1<a href="\2">\2<\/a>\3/'
-		printf "%s" "</pre>"
+		sed 's/^\(=>\s*\)\(\S*\)*\(.*\)/\1<a href="\2">\2<\/a>\3/' | awk '
+		BEGIN {
+			print "<!doctype html><body style=\"font-family:monospace; white-space:pre-wrap\">"
+		}
+		/^```/ {
+			if (!in_literal) {
+				in_literal = 1
+				print "<pre>"
+			} else {
+				in_literal = 0
+				print "</pre>"
+			}
+			next
+		}
+		in_literal {
+			print
+			next
+		}
+		{
+			print
+		}
+		END {
+			print "</body>"
+		}
+		'
 	fi
 }
 
