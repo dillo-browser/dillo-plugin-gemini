@@ -24,10 +24,9 @@ serve_404() {
 render_gemini() {
 	printf "Content-type: text/html\r\n\r\n"
 	if which ansi2html 2>&1 >/dev/null
-	then
-		ansi2html | sed 's/^\(=&gt;\s*\)\(\S*\)*\(.*\)/\1<a href="\2">\2<\/a>\3/'
-	else
-		awk '
+	then ansi2html
+	else cat
+	fi | awk '
 		BEGIN {
 			print "<!doctype html><body><style>"\
 				"div { font:monospace; white-space:pre-wrap; }\n"\
@@ -92,8 +91,7 @@ render_gemini() {
 		END {
 			print "</body>"
 		}
-		'
-	fi
+	'
 }
 
 send_status_msg() {
