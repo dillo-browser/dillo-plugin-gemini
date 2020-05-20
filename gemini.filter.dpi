@@ -27,6 +27,12 @@ render_gemini() {
 	then ansi2html
 	else cat
 	fi | awk '
+		function escape_html(str) {
+			gsub(/&/, "\\&amp;", str)
+			gsub(/</, "\\&lt;", str)
+			gsub(/>/, "\\&gt;", str)
+			return str
+		}
 		BEGIN {
 			print "<!doctype html><body><style>"\
 				"div { font:monospace; white-space:pre-wrap; }\n"\
@@ -58,7 +64,7 @@ render_gemini() {
 			}
 			match($0, /^\*+\s*/)
 			text = substr($0, RLENGTH+1)
-			printf "<li>%s</li>\n", text
+			printf "<li>%s</li>\n", escape_html(text)
 			next
 		}
 		/^#+/ {
@@ -66,7 +72,8 @@ render_gemini() {
 			tag = "h" RLENGTH
 			match($0, /^(#+\s*)/)
 			text = substr($0, RLENGTH+1)
-			printf "<%s style=\"font:sans-serif\">%s</%s>\n", tag, text, tag
+			html = escape_html(text)
+			printf "<%s style=\"font:sans-serif\">%s</%s>\n", tag, html, tag
 			next
 		}
 		/^=>/ {
@@ -77,7 +84,8 @@ render_gemini() {
 				href = substr(href, 0, RLENGTH)
 			}
 			sub(/:1965/, "", href)
-			printf "<div><a href=\"%s\">%s</a></div>\n", href, text
+			html = escape_html(text)
+			printf "<div><a href=\"%s\">%s</a></div>\n", href, html
 			next
 		}
 		/^$/ {
@@ -85,7 +93,7 @@ render_gemini() {
 			next
 		}
 		{
-			printf "<div>%s</div>\n", $0
+			printf "<div>%s</div>\n", escape_html($0)
 		}
 		END {
 			print "</body>"
