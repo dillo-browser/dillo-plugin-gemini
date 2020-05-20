@@ -77,7 +77,9 @@ render_gemini() {
 				text = substr(href, RLENGTH+1)
 				href = substr(href, 0, RLENGTH)
 			}
-			printf "<div><a href=\"%s\">%s</a>%s</div>\n", href, href, text
+			link = href
+			sub(/:1965/, "", href)
+			printf "<div><a href=\"%s\">%s</a>%s</div>\n", href, link, text
 			next
 		}
 		/^$/ {
