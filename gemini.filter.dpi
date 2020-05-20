@@ -27,7 +27,7 @@ render_gemini() {
 	then
 		ansi2html | sed 's/^\(=&gt;\s*\)\(\S*\)*\(.*\)/\1<a href="\2">\2<\/a>\3/'
 	else
-		sed 's/^\(=>\s*\)\(\S*\)*\(.*\)/\1<a href="\2">\2<\/a>\3/' | awk '
+		awk '
 		BEGIN {
 			print "<!doctype html><body><style>"\
 				"div { font:monospace; white-space:pre-wrap; }\n"\
@@ -68,6 +68,17 @@ render_gemini() {
 			match($0, /^(#+\s*)/)
 			text = substr($0, RLENGTH+1)
 			printf "<%s style=\"font:sans-serif\">%s</%s>\n", tag, text, tag
+			next
+		}
+		/^=>/ {
+			match($0, /^=>\s*/)
+			prefix = substr($0, 0, RLENGTH)
+			href = substr($0, RLENGTH+1)
+			if (match(href, /^\S+/)) {
+				text = substr(href, RLENGTH+1)
+				href = substr(href, 0, RLENGTH)
+			}
+			printf "<div>%s<a href=\"%s\">%s</a>%s</div>\n", prefix, href, href, text
 			next
 		}
 		/^$/ {
