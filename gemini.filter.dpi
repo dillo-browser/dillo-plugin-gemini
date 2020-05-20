@@ -83,9 +83,12 @@ render_gemini() {
 				text = substr(href, RLENGTH+2)
 				href = substr(href, 0, RLENGTH)
 			}
+			match(text, /^\s+/)
+			prefix = substr(text, 0, RLENGTH)
+			text = substr(text, RLENGTH+1)
 			sub(/:1965/, "", href)
 			html = escape_html(text)
-			printf "<div><a href=\"%s\">%s</a></div>\n", href, html
+			printf "<div>%s<a href=\"%s\">%s</a></div>\n", prefix, href, html
 			next
 		}
 		/^$/ {
