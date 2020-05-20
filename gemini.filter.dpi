@@ -29,7 +29,10 @@ render_gemini() {
 	else
 		sed 's/^\(=>\s*\)\(\S*\)*\(.*\)/\1<a href="\2">\2<\/a>\3/' | awk '
 		BEGIN {
-			print "<!doctype html><body style=\"font:monospace; white-space:pre-wrap\">"
+			print "<!doctype html><body><style>"\
+				"div { font:monospace; white-space:pre-wrap; }\n"\
+				"h1, h2, h3 { margin: 0; }\n"\
+				"</style>"
 		}
 		/^```/ {
 			if (!in_literal) {
@@ -45,16 +48,34 @@ render_gemini() {
 			print
 			next
 		}
+		in_list && !/^\*/ {
+			in_list = 0
+			print "</ul>"
+		}
+		/^\*/ {
+			if (!in_list) {
+				in_list = 1
+				printf "<ul>"
+			}
+			match($0, /^\*+\s*/)
+			text = substr($0, RLENGTH+1)
+			printf "<li>%s</li>\n", text
+			next
+		}
 		/^#+/ {
 			match($0, /^#+/)
 			tag = "h" RLENGTH
 			match($0, /^(#+\s*)/)
 			text = substr($0, RLENGTH+1)
-			printf "<%s style=\"font:sans-serif\">%s</%s>", tag, text, tag
+			printf "<%s style=\"font:sans-serif\">%s</%s>\n", tag, text, tag
+			next
+		}
+		/^$/ {
+			print "<br>"
 			next
 		}
 		{
-			print
+			printf "<div>%s</div>\n", $0
 		}
 		END {
 			print "</body>"
