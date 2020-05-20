@@ -73,12 +73,11 @@ render_gemini() {
 			match($0, /^=>\s*/)
 			href = substr($0, RLENGTH+1)
 			if (match(href, /^\S+/)) {
-				text = substr(href, RLENGTH+1)
+				text = substr(href, RLENGTH+2)
 				href = substr(href, 0, RLENGTH)
 			}
-			link = href
 			sub(/:1965/, "", href)
-			printf "<div><a href=\"%s\">%s</a>%s</div>\n", href, link, text
+			printf "<div><a href=\"%s\">%s</a></div>\n", href, text
 			next
 		}
 		/^$/ {
