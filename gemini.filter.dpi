@@ -155,7 +155,7 @@ serve_success() {
 	type=$1
 	case "$type" in
 		text/gemini*) render_gemini;;
-		*) printf "Content-type: $type\r\n\r\n"; cat;;
+		*) printf "Content-type: %s\r\n\r\n" "$type"; cat;;
 	esac
 }
 
