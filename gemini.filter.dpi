@@ -39,6 +39,9 @@ render_gemini() {
 				"h1, h2, h3 { margin: 0; }\n"\
 				"</style>"
 		}
+		{
+			sub(/\r$/, "")
+		}
 		/^```/ {
 			if (!in_literal) {
 				in_literal = 1
