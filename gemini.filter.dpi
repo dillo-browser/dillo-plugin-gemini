@@ -87,6 +87,9 @@ render_gemini() {
 			prefix = substr(text, 0, RLENGTH)
 			text = substr(text, RLENGTH+1)
 			sub(/:1965/, "", href)
+			if (!text) {
+				text = href
+			}
 			html = escape_html(text)
 			printf "<div>%s<a href=\"%s\">%s</a></div>\n", prefix, href, html
 			next
