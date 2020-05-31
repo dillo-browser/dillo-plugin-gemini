@@ -86,8 +86,9 @@ render_gemini() {
 				text = substr(href, RLENGTH+2)
 				href = substr(href, 0, RLENGTH)
 			}
+			match($0, /^=>\s+/)
+			prefix = substr($0, 3, RLENGTH-3)
 			match(text, /^\s+/)
-			prefix = substr(text, 0, RLENGTH)
 			text = substr(text, RLENGTH+1)
 			sub(/:1965/, "", href)
 			if (!text) {
