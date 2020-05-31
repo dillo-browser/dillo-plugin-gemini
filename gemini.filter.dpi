@@ -94,6 +94,9 @@ render_gemini() {
 			if (!text) {
 				text = href
 			}
+			if (match(href, /^gemini:\/\/[^/]+$/)) {
+				href = href "/"
+			}
 			sub(/^\t+/, "", prefix)
 			html = escape_html(text)
 			printf "<div>%s<a href=\"%s\">%s</a></div>\n", prefix, href, html
