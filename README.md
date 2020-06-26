@@ -29,6 +29,12 @@ dpidc stop
 - <gemini://gemini.circumlunar.space/>
 - <gemini://gemini.conman.org/>
 
+## See also
+
+- [gemini.filter.dpi](https://github.com/boomlinde/gemini.filter.dpi) - Another
+  Dillo Gemini plugin, implemented in Go, and more feature-complete than this
+  one.
+
 [Gemini]: https://gopher.tildeverse.org/zaibatsu.circumlunar.space/1/~solderpunk/gemini
 [Dillo]: https://dillo.org/
 [git-ssb]: %n92DiQh7ietE+R+X/I403LQoyf2DtR3WQfCkDKlheQU=.sha256
