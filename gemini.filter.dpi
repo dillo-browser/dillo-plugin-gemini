@@ -23,7 +23,7 @@ serve_404() {
 
 render_gemini() {
 	printf "Content-type: text/html\r\n\r\n"
-	if which ansi2html 2>&1 >/dev/null
+	if command -v ansi2html >/dev/null
 	then ansi2html
 	else cat
 	fi | awk '
