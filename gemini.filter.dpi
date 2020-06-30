@@ -223,11 +223,20 @@ serve_fail() {
 }
 
 serve_gemini() {
-	url=$1
-	url1=${url#gemini://}
-	hostname=${url1%%/*}
+	url=${1%%#*}
+	url_noquery=${url%%\?*}
+	query=${url##*\?}
+	if [ "$query" = "$url_noquery" ]
+	then query=
+	else query="?$query"
+	fi
+	url_scheme_relative=${url_noquery#gemini://}
+	hostname=${url_scheme_relative%%/*}
+	path=${url_scheme_relative#*/}
+	if [ "$path" = "$hostname" ]; then path=; fi
 	host=${hostname%%:*}
 	port=${hostname##*:}
+	url="gemini://$hostname/$path$query"
 
 	# replace "?_=" with "?".
 	# dillo can only submit forms with name=value items, but Gemini
