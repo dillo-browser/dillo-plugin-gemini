@@ -239,7 +239,7 @@ serve_gemini() {
 
 	if [ "$host" = "$port" ]; then port=1965; fi
 	send_status_msg "Sending request..."
-	printf "%s\r\n" "$url" | openssl s_client -verify_quiet -quiet "$host:$port" | {
+	printf "%s\r\n" "$url" | openssl s_client -quiet -connect "$host:$port" | {
 		read status meta
 		send_status_msg "Status: $status"
 		meta=$(echo "$meta" | sed 's/\s*$//')
