@@ -133,7 +133,8 @@ serve_missing_status() {
 
 serve_input() {
 	printf "<cmd='start_send_page' url='' '>\n"
-	prompt=$1
+	url=$1
+	prompt=$2
 	# TODO: html-escape prompt
 	printf "Content-type: text/html\r\n\r\n"
 	cat <<-EOF
@@ -143,9 +144,9 @@ serve_input() {
 	<title>Input</title>
 	</head>
 	<body>
-	<form action="" method="get">
+	<form action="gemini:input:$url" method=get>
 		<h3>$prompt</h3>
-		<input name=_ style='width:100%'>
+		<input name=q style='width:100%'>
 		<input type=submit>
 	</form>
 	</body>
@@ -176,6 +177,24 @@ serve_redirect() {
 	</head>
 	<body>
 	<h3>Redirect to <a href="$url">$url</a></3>
+	</body>
+	</html>
+	EOF
+}
+
+serve_real_redirect() {
+	send_status_msg "Redirected"
+	printf "<cmd='start_send_page' url='' '>\n"
+	printf "Content-type: text/html\r\n\r\n"
+	# TODO: html-escape url
+	cat <<-EOF
+	<!doctype html>
+	<html>
+	<head>
+	<title>Redirecting to $url</title>
+	<meta http-equiv="Refresh" content="0; url=$url" />
+	</head>
+	<body>
 	</body>
 	</html>
 	EOF
@@ -221,6 +240,17 @@ serve_fail() {
 	EOF
 }
 
+serve_gemini_input() {
+	url=${1#gemini:input:}
+
+	url_no_query=${url%%?q=*}
+	if [ "$url_no_query" != "$url" ]; then
+		url="${url_no_query}?${url#*?q=}"
+	fi
+
+	serve_real_redirect "$url"
+}
+
 serve_gemini() {
 	url=${1%%#*}
 	url_noquery=${url%%\?*}
@@ -237,14 +267,6 @@ serve_gemini() {
 	port=${hostname##*:}
 	url="gemini://$hostname/$path$query"
 
-	# replace "?_=" with "?".
-	# dillo can only submit forms with name=value items, but Gemini
-	# uses the whole querystring as a single string
-	url1=${url%%?_=*}
-	if [ "$url1" != "$url" ]; then
-		url="${url1}?${url#*?_=}"
-	fi
-
 	if [ "$host" = "$port" ]; then port=1965; fi
 	send_status_msg "Sending request..."
 	printf "%s\r\n" "$url" | openssl s_client -quiet -connect "$host:$port" | {
@@ -252,7 +274,7 @@ serve_gemini() {
 		send_status_msg "Status: $status"
 		meta=$(echo "$meta" | sed 's/\s*$//')
 		case "$status" in
-			1*) serve_input "$meta";;
+			1*) serve_input "$url" "$meta";;
 			2*) serve_success "$meta";;
 			3*) serve_redirect "$meta";;
 			4*) serve_error "$status" "$meta";;
@@ -265,6 +287,7 @@ serve_gemini() {
 }
 
 case "$url" in
+	gemini:input:*) serve_gemini_input "$url";;
 	gemini:*) serve_gemini "$url";;
 	*) serve_404;;
 esac
