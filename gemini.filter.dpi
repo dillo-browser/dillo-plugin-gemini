@@ -35,7 +35,6 @@ render_gemini() {
 		}
 		BEGIN {
 			print "<!doctype html><body><style>"\
-				"div { font:monospace; white-space:pre-wrap; }\n"\
 				"h1, h2, h3 { margin: 0; }\n"\
 				"</style>"
 		}
