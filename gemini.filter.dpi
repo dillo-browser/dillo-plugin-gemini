@@ -269,21 +269,24 @@ serve_gemini() {
 
 	if [ "$host" = "$port" ]; then port=1965; fi
 	send_status_msg "Sending request..."
-	printf "%s\r\n" "$url" | openssl s_client -quiet -connect "$host:$port" | {
-		read status meta
-		send_status_msg "Status: $status"
-		meta=$(echo "$meta" | sed 's/\s*$//')
-		case "$status" in
-			1*) serve_input "$url" "$meta";;
-			2*) serve_success "$meta";;
-			3*) serve_redirect "$meta";;
-			4*) serve_error "$status" "$meta";;
-			5*) serve_error "$meta";;
-			#6*) serve_client_cert_required "$meta";;
-			'') serve_missing_status "$meta";;
-			*) serve_status_not_supported "$status" "$meta";;
-		esac
-	}
+	printf "%s\r\n" "$url" | openssl s_client -quiet -connect "$host:$port" | serve_gemini_response "$url"
+}
+
+serve_gemini_response() {
+	url=$1
+	read status meta
+	send_status_msg "Status: $status"
+	meta=$(echo "$meta" | sed 's/\s*$//')
+	case "$status" in
+		1*) serve_input "$url" "$meta";;
+		2*) serve_success "$meta";;
+		3*) serve_redirect "$meta";;
+		4*) serve_error "$status" "$meta";;
+		5*) serve_error "$meta";;
+		#6*) serve_client_cert_required "$meta";;
+		'') serve_missing_status "$meta";;
+		*) serve_status_not_supported "$status" "$meta";;
+	esac
 }
 
 case "$url" in
