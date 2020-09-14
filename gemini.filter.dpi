@@ -251,6 +251,8 @@ serve_gemini_input() {
 	serve_real_redirect "$url"
 }
 
+blobs_dir=${ssb_path:-~/.${ssb_appname:-ssb}}/blobs
+
 serve_gemini() {
 	url=${1%%#*}
 	url_noquery=${url%%\?*}
@@ -277,7 +279,9 @@ serve_gemini_response() {
 	read status meta
 	send_status_msg "Status: $status"
 	meta=$(echo "$meta" | sed 's/\s*$//')
-	case "$status" in
+	mkdir -p $blobs_dir/tmp ~/.dillo/gemini
+	tmp=$(mktemp $blobs_dir/tmp/XXXXXXXXXXXX)
+	tee "$tmp" | case "$status" in
 		1*) serve_input "$url" "$meta";;
 		2*) serve_success "$meta";;
 		3*) serve_redirect "$meta";;
@@ -287,6 +291,16 @@ serve_gemini_response() {
 		'') serve_missing_status "$meta";;
 		*) serve_status_not_supported "$status" "$meta";;
 	esac
+	dest=$blobs_dir/sha256/$(sha256sum "$tmp" | awk '{print substr($1, 1, 2) "/" substr($1, 3)}')
+	if test -e "$dest" && cmp -s "$tmp" "$dest"
+	then
+		# unchanged resource
+		rm "$tmp"
+	else
+		mkdir -p "${dest#/*}"
+		mv "$tmp" "$dest"
+	fi
+	printf "%s %s %s %s\n" "$(date -u +%FT%TZ)" "$dest" "$url" "$status $meta" >>~/.dillo/gemini/history.txt
 }
 
 case "$url" in
