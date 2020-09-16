@@ -244,11 +244,13 @@ serve_fail() {
 serve_gemini_input() {
 	url=${1#gemini:input:}
 
+	# gemini:input://REQUEST?q=INPUT -> gemini://REQUEST?INPUT
 	url_no_query=${url%%?q=*}
 	if [ "$url_no_query" != "$url" ]; then
 		url="${url_no_query}?${url#*?q=}"
 	fi
 
+	url=$(printf "%s" "$url" | sed 's/\+/%20/g')
 	serve_real_redirect "$url"
 }
 
