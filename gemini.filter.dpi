@@ -52,7 +52,7 @@ render_gemini() {
 			next
 		}
 		in_literal {
-			print
+			print escape_html($0)
 			next
 		}
 		in_list && !/^\*/ {
