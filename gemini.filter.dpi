@@ -307,7 +307,7 @@ serve_gemini_response() {
 		# unchanged resource
 		rm "$tmp"
 	else
-		mkdir -p "${dest#/*}"
+		mkdir -p "${dest%/*}"
 		mv "$tmp" "$dest"
 	fi
 	printf "%s %s %s %s\n" "$(date -u +%FT%TZ)" "$dest" "$url" "$status $meta" >>~/.dillo/gemini/history.txt
