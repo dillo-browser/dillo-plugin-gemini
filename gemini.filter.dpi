@@ -78,6 +78,12 @@ render_gemini() {
 			printf "<%s style=\"font:sans-serif\">%s</%s>\n", tag, html, tag
 			next
 		}
+		/^>/ {
+			match($0, /^>+\s*/)
+			text = substr($0, RLENGTH+1)
+			printf "<blockquote>%s</blockquote>\n", escape_html(text)
+			next
+		}
 		/^=>/ {
 			match($0, /^=>\s*/)
 			href = substr($0, RLENGTH+1)
