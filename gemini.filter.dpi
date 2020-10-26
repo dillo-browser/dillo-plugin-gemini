@@ -6,6 +6,7 @@
 # notice and this notice are preserved.  This file is offered as-is,
 # without any warranty.
 
+# Note: "read -d" is a Bashism
 read -d '>' auth
 read -d '>' cmd
 case "$cmd" in
