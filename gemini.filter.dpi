@@ -65,7 +65,7 @@ render_gemini() {
 				in_list = 1
 				printf "<ul>"
 			}
-			match($0, /^\*+\s*/)
+			match($0, /^\*+[ \t]*/)
 			text = substr($0, RLENGTH+1)
 			printf "<li>%s</li>\n", escape_html(text)
 			next
@@ -73,28 +73,28 @@ render_gemini() {
 		/^#+/ {
 			match($0, /^#+/)
 			tag = "h" RLENGTH
-			match($0, /^(#+\s*)/)
+			match($0, /^(#+[ \t]*)/)
 			text = substr($0, RLENGTH+1)
 			html = escape_html(text)
 			printf "<%s style=\"font:sans-serif\">%s</%s>\n", tag, html, tag
 			next
 		}
 		/^>/ {
-			match($0, /^>+\s*/)
+			match($0, /^>+[ \t]*/)
 			text = substr($0, RLENGTH+1)
 			printf "<blockquote>%s</blockquote>\n", escape_html(text)
 			next
 		}
 		/^=>/ {
-			match($0, /^=>\s*/)
+			match($0, /^=>[ \t]*/)
 			href = substr($0, RLENGTH+1)
-			if (match(href, /^\S+/)) {
+			if (match(href, /^[^ \t]+/)) {
 				text = substr(href, RLENGTH+2)
 				href = substr(href, 0, RLENGTH)
 			}
-			match($0, /^=>\s+/)
+			match($0, /^=>[ \t]+/)
 			prefix = substr($0, 3, RLENGTH-3)
-			match(text, /^\s+/)
+			match(text, /^[ \t]+/)
 			text = substr(text, RLENGTH+1)
 			sub(/:1965/, "", href)
 			if (!text) {
