@@ -1,32 +1,31 @@
-# dillo-gemini
+# Gemini plugin for Dillo
 
 [Gemini][] protocol plugin for [Dillo][].
 
 ## Screenshot
 
-![Dillo loading gemini://gemini.conman.org/](&Mi6TnZIOeSmIVeI0VbtY3tqvIEcoCrUas2EwwS09sl0=.sha256)
+![Dillo loading gemini://geminiquickst.art/](screenshot.png)
 
 ## Install
 
-dillo-gemini requires the `openssl` command-line tool.
+Requires the `openssl` command-line tool.
 
 [ansi2html](https://pypi.org/project/ansi2html/) is optionally required to render pages that use ANSI escape codes (e.g. for colors).
 
-This repo is hosted on the [SSB Network][SSB] using [git-ssb][].
+To install use:
 
 ```sh
-git clone ssb://%V0D7DtSnZyyAp1NbgOJF2ZAFMeUy9eXwyClCEKYUYAI=.sha256 dillo-gemini
-cd dillo-gemini
-mkdir -p ~/.dillo/dpi/gemini
-ln -rs gemini.filter.dpi ~/.dillo/dpi/gemini
-test -f ~/.dillo/dpidrc || cp /etc/dillo/dpidrc ~/.dillo/dpidrc
-echo 'proto.gemini=gemini/gemini.filter.dpi' >> ~/.dillo/dpidrc
-dpidc stop
+$ make install
 ```
+
+Created by [Charles E. Lehner](https://celehner.com/) along with other
+[Dillo plugins](https://celehner.com/projects.html#dillo-plugins).
+The original repo is hosted on the [SSB Network][SSB] using [git-ssb][].
 
 ## Sites to try
 
-- <gemini://gemini.circumlunar.space/>
+- <gemini://geminiquickst.art/>
+- <gemini://geminiprotocol.net'>
 - <gemini://gemini.conman.org/>
 
 ## See also
@@ -35,8 +34,8 @@ dpidc stop
   Dillo Gemini plugin, implemented in Go, and more feature-complete than this
   one.
 
-[Gemini]: https://gopher.tildeverse.org/zaibatsu.circumlunar.space/1/~solderpunk/gemini
-[Dillo]: https://dillo.org/
+[Gemini]: https://en.wikipedia.org/wiki/Gemini_(protocol)
+[Dillo]: https://dillo-browser.github.io/
 [git-ssb]: %n92DiQh7ietE+R+X/I403LQoyf2DtR3WQfCkDKlheQU=.sha256
 [SSB]: https://www.scuttlebutt.nz/
 
