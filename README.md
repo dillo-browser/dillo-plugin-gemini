@@ -25,7 +25,7 @@ The original repo is hosted on the [SSB Network][SSB] using [git-ssb][].
 ## Sites to try
 
 - <gemini://geminiquickst.art/>
-- <gemini://geminiprotocol.net'>
+- <gemini://geminiprotocol.net/>
 - <gemini://gemini.conman.org/>
 
 ## See also
