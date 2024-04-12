@@ -9,7 +9,10 @@ all:
 	@echo "Use 'make uninstall' to uninstall"
 
 $(DPIDRC):
-	cp /etc/dillo/dpidrc $@
+	mkdir -p $(DPI_DIR)
+	if [ -f /etc/dillo/dpidrc ]; then cp /etc/dillo/dpidrc $@; \
+	elif [ -f /usr/local/etc/dillo/dpidrc ]; then cp /usr/local/etc/dillo/dpidrc $@; \
+	else echo "Can't find dpidrc, is dillo installed?"; false; fi
 
 install-proto: $(DPIDRC)
 	grep -q '^proto.$(NAME)=$(NAME)' $< || echo 'proto.$(NAME)=$(NAME)/$(BIN)' >> $<
