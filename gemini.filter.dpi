@@ -6,9 +6,10 @@
 # notice and this notice are preserved.  This file is offered as-is,
 # without any warranty.
 
-# Note: "read -d" is a Bashism
-read -d '>' auth
-read -d '>' cmd
+# Note: "read -d" is a Bashism; -r disables line wrapping with
+# backslashes
+read -rd '>' auth
+read -rd '>' cmd
 case "$cmd" in
 	"<cmd='open_url' url='"*);;
 	*) echo "$cmd"; exit;;
@@ -286,7 +287,7 @@ serve_gemini() {
 
 serve_gemini_response() {
 	url=$1
-	read status meta
+	read -r status meta
 	send_status_msg "Status: $status"
 	meta=$(echo "$meta" | sed 's/\s*$//')
 	mkdir -p "$blobs_dir"/tmp ~/.dillo/gemini
