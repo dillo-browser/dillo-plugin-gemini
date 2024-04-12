@@ -11,7 +11,7 @@ read -d '>' auth
 read -d '>' cmd
 case "$cmd" in
 	"<cmd='open_url' url='"*);;
-	*) echo $cmd; exit;;
+	*) echo "$cmd"; exit;;
 esac
 url=${cmd#"<cmd='open_url' url='"}
 url=${url%"' '"}
@@ -128,20 +128,20 @@ send_status_msg() {
 serve_status_not_supported() {
 	printf "<cmd='start_send_page' url='' '>\n"
 	printf "Content-type: text/plain\r\n\r\n"
-	echo Status not implemented: $1
-	echo $2
+	echo Status not implemented: "$1"
+	echo "$2"
 }
 
 serve_missing_status() {
 	printf "<cmd='start_send_page' url='' '>\n"
 	printf "Content-type: text/plain\r\n\r\n"
-	echo Empty status response. $2
+	echo Empty status response. "$2"
 }
 
 serve_input() {
 	printf "<cmd='start_send_page' url='' '>\n"
-	url=$1
-	prompt=$2
+	url="$1"
+	prompt="$2"
 	# TODO: html-escape prompt
 	printf "Content-type: text/html\r\n\r\n"
 	cat <<-EOF
@@ -163,7 +163,7 @@ serve_input() {
 
 serve_success() {
 	printf "<cmd='start_send_page' url='' '>\n"
-	type=$1
+	type="$1"
 	case "$type" in
 		text/gemini*) render_gemini;;
 		application/xml|application/*+xml) printf "Content-type: text/xml\r\n\r\n"; cat;;
@@ -172,7 +172,7 @@ serve_success() {
 }
 
 serve_redirect() {
-	url=$1
+	url="$1"
 	send_status_msg "Redirected"
 	printf "<cmd='start_send_page' url='' '>\n"
 	printf "Content-type: text/html\r\n\r\n"
@@ -209,8 +209,8 @@ serve_real_redirect() {
 }
 
 serve_error() {
-	status=$1
-	meta=$2
+	status="$1"
+	meta="$2"
 	send_status_msg "Request failed"
 	printf "<cmd='start_send_page' url='' '>\n"
 	printf "Content-type: text/html\r\n\r\n"
@@ -289,8 +289,8 @@ serve_gemini_response() {
 	read status meta
 	send_status_msg "Status: $status"
 	meta=$(echo "$meta" | sed 's/\s*$//')
-	mkdir -p $blobs_dir/tmp ~/.dillo/gemini
-	tmp=$(mktemp $blobs_dir/tmp/XXXXXXXXXXXX)
+	mkdir -p "$blobs_dir"/tmp ~/.dillo/gemini
+	tmp=$(mktemp "$blobs_dir"/tmp/XXXXXXXXXXXX)
 	tee "$tmp" | case "$status" in
 		1*) serve_input "$url" "$meta";;
 		2*) serve_success "$meta";;
@@ -301,7 +301,7 @@ serve_gemini_response() {
 		'') serve_missing_status "$meta";;
 		*) serve_status_not_supported "$status" "$meta";;
 	esac
-	dest=$blobs_dir/sha256/$(sha256sum "$tmp" | awk '{print substr($1, 1, 2) "/" substr($1, 3)}')
+	dest="$blobs_dir"/sha256/$(sha256sum "$tmp" | awk '{print substr($1, 1, 2) "/" substr($1, 3)}')
 	if test -e "$dest" && cmp -s "$tmp" "$dest"
 	then
 		# unchanged resource
