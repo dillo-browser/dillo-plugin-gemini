@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # dillo-gemini
 # © 2020 Charles E. Lehner
 # Copying and distribution of this file, with or without modification,
