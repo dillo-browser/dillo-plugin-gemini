@@ -1,6 +1,7 @@
 NAME = gemini
 BIN = $(NAME).filter.dpi
 DILLO_DIR = ~/.dillo
+CSS = style.css
 DPI_DIR = $(DILLO_DIR)/dpi/$(NAME)
 DPIDRC = $(DILLO_DIR)/dpidrc
 
@@ -21,13 +22,16 @@ install-proto: $(DPIDRC)
 link: $(BIN) install-proto
 	mkdir -p $(DPI_DIR)
 	ln -frs $(BIN) $(DPI_DIR)
+	ln -frs $(CSS) $(DPI_DIR)
 
 install: $(BIN) install-proto
 	mkdir -p $(DPI_DIR)
 	cp -f $(BIN) $(DPI_DIR)
+	cp -f $(CSS) $(DPI_DIR)
 
 uninstall: $(BIN)
 	rm -f $(DPI_DIR)/$(BIN)
+	rm -f $(DPI_DIR)/$(CSS)
 
 .PHONY:
 	all install install-proto uninstall
