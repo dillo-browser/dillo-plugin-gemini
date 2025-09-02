@@ -29,7 +29,7 @@ render_gemini() {
 	cat ~/.dillo/dpi/gemini/style.css || true
 	printf "</style></head>\n"
 	if command -v ansi2html >/dev/null
-	then ansi2html
+	then ansi2html -iu
 	else cat
 	fi | awk '
 		function escape_html(str) {
