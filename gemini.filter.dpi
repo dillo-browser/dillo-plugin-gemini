@@ -290,7 +290,7 @@ serve_gemini_response() {
 	url=$1
 	read -r status meta
 	send_status_msg "Status: $status"
-	meta=$(echo "$meta" | sed 's/\s*$//')
+	meta=$(echo "$meta" | sed 's/[[:blank:]]*$//')
 	mkdir -p "$blobs_dir"/tmp ~/.dillo/gemini
 	tmp=$(mktemp "$blobs_dir"/tmp/XXXXXXXXXXXX)
 	tee "$tmp" | case "$status" in
